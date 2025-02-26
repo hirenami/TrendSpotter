@@ -10,6 +10,7 @@ func (a *Api) GetTrend() {
 	parameter := map[string]string{
 		"engine": "google_trends_trending_now",
 		"geo":    "JP",
+		"hours":  "48",
 	}
 
 	search := g.NewGoogleSearch(parameter, "a315f225081bc2a6a47570925e9fc45ce22f3fa1fe083c826bdc41219613a893")
