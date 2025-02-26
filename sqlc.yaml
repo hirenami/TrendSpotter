@@ -1,0 +1,10 @@
+version: "1"
+packages:
+  - name: "sqlc"
+    path: "./sqlc"
+    queries: "db/query"
+    schema: "db/init"
+    engine: "mysql"
+    emit_json_tags: true
+    emit_exact_table_names: false
+    emit_empty_slices: true
