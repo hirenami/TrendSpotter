@@ -3,6 +3,6 @@ package api
 type Api struct {
 }
 
-func New() *Api {
+func NewApi() *Api {
 	return &Api{}
 }

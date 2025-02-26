@@ -8,6 +8,7 @@ import (
 	"os"
 
 	_ "github.com/go-sql-driver/mysql"
+	"github.com/hirenami/TrendSpotter/api"
 	"github.com/hirenami/TrendSpotter/dao"
 	"github.com/hirenami/TrendSpotter/handler"
 	"github.com/hirenami/TrendSpotter/sqlc"
@@ -44,6 +45,9 @@ func main() {
 	Handler := handler.Newhandler(Usecase)
 
 	r := handler.SetupRoutes(Handler)
+
+	a := api.NewApi()
+	a.GetTrend()
 
 	log.Println("Listening...")
 	if err := http.ListenAndServe(":8080", r); err != nil {
