@@ -47,7 +47,27 @@ func main() {
 	r := handler.SetupRoutes(Handler)
 
 	a := api.NewApi()
-	a.GetTrend()
+	//a.GetTrend()
+
+	items := []string{
+		"しゃぶ葉 牛タン", "ジョナサン", "築地 銀だこ", "コナズ珈琲", "青いじゃがりこ",
+		"ヒロシ", "ファミリーマート", "ドミノ・ピザ", "キットカット", "バーガーキング",
+		"霞ヶ浦", "行田市", "アサイー", "河合郁人", "ガストフィットメニュー",
+		"ロイヤルホスト", "dish", "z世代", "不二家", "しさんうどん",
+		"シャカシャカポテト", "マックスバリュ",
+	}
+
+	for _, item := range items {
+		// Perplexity APIで分類を確認
+		perplexityResponse, err := a.CallPerplexityAPI(item)
+		if err != nil {
+			log.Printf("Perplexity APIエラー: %v\n", err)
+			continue
+		}
+
+		// 分類結果を出力
+		log.Printf(perplexityResponse.Choices[0].Message.Content)
+	}
 
 	log.Println("Listening...")
 	if err := http.ListenAndServe(":8080", r); err != nil {

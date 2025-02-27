@@ -44,9 +44,12 @@ func (a *Api) GetTrend() {
 			}
 			if idVal, exists := category["id"]; exists {
 				if idFloat, ok := idVal.(float64); ok && int(idFloat) == 5 {
-					// カテゴリID 5 (Food and Drink) に該当する場合、クエリを出力
+					// カテゴリID 5 (Food and Drink) に該当する場合、クエリとリンクを出力
 					if query, ok := trend["query"].(string); ok {
-						fmt.Println(query)
+						fmt.Println("Query: ", query)
+					}
+					if link, ok := trend["serpapi_google_trends_link"].(string); ok {
+						fmt.Println("Link: ", link)
 					}
 					break // 該当するカテゴリが見つかったので、他のカテゴリはチェック不要
 				}

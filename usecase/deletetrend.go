@@ -1,5 +1,9 @@
 package usecase
 
-func (u *Usecase) DeleteTrend() {
-	// ここに処理を書く
+import "context"
+
+func (u *Usecase) DeleteTrend(ctx context.Context)error {
+	err :=u.dao.DeleteTrend(ctx)
+
+	return err
 }

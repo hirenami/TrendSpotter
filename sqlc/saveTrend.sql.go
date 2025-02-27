@@ -9,26 +9,26 @@ import (
 	"context"
 )
 
-const deleteTrend = `-- name: deleteTrend :exec
+const deleteTrend = `-- name: DeleteTrend :exec
 DELETE FROM trends
 `
 
-func (q *Queries) deleteTrend(ctx context.Context) error {
+func (q *Queries) DeleteTrend(ctx context.Context) error {
 	_, err := q.db.ExecContext(ctx, deleteTrend)
 	return err
 }
 
-const saveTrend = `-- name: saveTrend :exec
+const saveTrend = `-- name: SaveTrend :exec
 INSERT INTO trends (trends_name,trends_location,trends_rank) VALUES (?, ?, ?)
 `
 
-type saveTrendParams struct {
+type SaveTrendParams struct {
 	TrendsName     string `json:"trends_name"`
 	TrendsLocation string `json:"trends_location"`
 	TrendsRank     int32  `json:"trends_rank"`
 }
 
-func (q *Queries) saveTrend(ctx context.Context, arg saveTrendParams) error {
+func (q *Queries) SaveTrend(ctx context.Context, arg SaveTrendParams) error {
 	_, err := q.db.ExecContext(ctx, saveTrend, arg.TrendsName, arg.TrendsLocation, arg.TrendsRank)
 	return err
 }
