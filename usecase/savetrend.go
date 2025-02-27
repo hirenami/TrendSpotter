@@ -1,9 +1,26 @@
 package usecase
 
-import "context"
+import (
+	"context"
+)
 
-func (u *Usecase) SaveTrend(ctx context.Context, trendName, trendLocation string, trendRank int32) error{
-	err := u.dao.SaveTrend(ctx, trendName, trendLocation, trendRank)
+func (u *Usecase) SaveTrend(ctx context.Context) error {
+	queries, err := u.api.GetTrend()
+	if err != nil {
+		return err
+	}
+
+	items, err := u.api.CallPerplexityAPI(queries)
+	if err != nil {
+		return err
+	}
+
+	for _, item := range items {
+		err := u.dao.SaveTrend(ctx, item.Name, item.Location, item.Rank)
+		if err != nil {
+			return err
+		}
+	}
 
 	return err
 }

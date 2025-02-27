@@ -1,6 +1,7 @@
 package main
 
 import (
+	"context"
 	"database/sql"
 	"fmt"
 	"log"
@@ -8,7 +9,6 @@ import (
 	"os"
 
 	_ "github.com/go-sql-driver/mysql"
-	"github.com/hirenami/TrendSpotter/api"
 	"github.com/hirenami/TrendSpotter/dao"
 	"github.com/hirenami/TrendSpotter/handler"
 	"github.com/hirenami/TrendSpotter/sqlc"
@@ -46,28 +46,7 @@ func main() {
 
 	r := handler.SetupRoutes(Handler)
 
-	a := api.NewApi()
-	//a.GetTrend()
-
-	items := []string{
-		"しゃぶ葉 牛タン", "ジョナサン", "築地 銀だこ", "コナズ珈琲", "青いじゃがりこ",
-		"ヒロシ", "ファミリーマート", "ドミノ・ピザ", "キットカット", "バーガーキング",
-		"霞ヶ浦", "行田市", "アサイー", "河合郁人", "ガストフィットメニュー",
-		"ロイヤルホスト", "dish", "z世代", "不二家", "しさんうどん",
-		"シャカシャカポテト", "マックスバリュ",
-	}
-
-	for _, item := range items {
-		// Perplexity APIで分類を確認
-		perplexityResponse, err := a.CallPerplexityAPI(item)
-		if err != nil {
-			log.Printf("Perplexity APIエラー: %v\n", err)
-			continue
-		}
-
-		// 分類結果を出力
-		log.Printf(perplexityResponse.Choices[0].Message.Content)
-	}
+	Usecase.SaveTrend(context.Background())
 
 	log.Println("Listening...")
 	if err := http.ListenAndServe(":8080", r); err != nil {

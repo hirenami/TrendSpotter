@@ -23,9 +23,8 @@ type NewsAPIResponse struct {
 	} `json:"articles"`
 }
 
-func (a *Api) getNews(query string) ([]string, error) {
-	// Google News APIのURL
-	apiKey := "YOUR_NEWS_API_KEY"
+func (a *Api) GetNews(query string) ([]string, error) {
+	apiKey := ""
 	url := fmt.Sprintf("https://newsapi.org/v2/everything?q=%s&apiKey=%s", query, apiKey)
 
 	resp, err := http.Get(url)

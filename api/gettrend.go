@@ -1,12 +1,10 @@
 package api
 
 import (
-	"fmt"
-
 	g "github.com/serpapi/google-search-results-golang"
 )
 
-func (a *Api) GetTrend() {
+func (a *Api) GetTrend() ([]string, error) {
 	parameter := map[string]string{
 		"engine": "google_trends_trending_now",
 		"geo":    "JP",
@@ -16,13 +14,15 @@ func (a *Api) GetTrend() {
 	search := g.NewGoogleSearch(parameter, "a315f225081bc2a6a47570925e9fc45ce22f3fa1fe083c826bdc41219613a893")
 	results, err := search.GetJSON()
 	if err != nil {
-		panic(err)
+		return nil, err
 	}
 
 	trendingSearches, ok := results["trending_searches"].([]interface{})
 	if !ok {
 		panic("unexpected type for trending_searches")
 	}
+
+	var queries []string 
 
 	// 各トレンド情報を走査
 	for i := 0; i < len(trendingSearches); i++ {
@@ -44,16 +44,15 @@ func (a *Api) GetTrend() {
 			}
 			if idVal, exists := category["id"]; exists {
 				if idFloat, ok := idVal.(float64); ok && int(idFloat) == 5 {
-					// カテゴリID 5 (Food and Drink) に該当する場合、クエリとリンクを出力
+					// カテゴリID 5 (Food and Drink) に該当する場合、queryをスライスに追加
 					if query, ok := trend["query"].(string); ok {
-						fmt.Println("Query: ", query)
-					}
-					if link, ok := trend["serpapi_google_trends_link"].(string); ok {
-						fmt.Println("Link: ", link)
+						queries = append(queries, query) // queryをスライスに追加
 					}
 					break // 該当するカテゴリが見つかったので、他のカテゴリはチェック不要
 				}
 			}
 		}
 	}
+
+	return queries,nil 
 }
