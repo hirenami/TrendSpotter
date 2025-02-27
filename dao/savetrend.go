@@ -2,11 +2,12 @@ package dao
 
 import (
 	"context"
+	"database/sql"
 
 	"github.com/hirenami/TrendSpotter/sqlc"
 )
 
-func (d *Dao) SaveTrend(ctx context.Context, trendName, trendLocation string, trendRank, trendEndtimestamp, trendIncreasepercentage int32) error {
+func (d *Dao) SaveTrend(ctx context.Context, tx *sql.Tx, trendName, trendLocation string, trendRank, trendEndtimestamp, trendIncreasepercentage int32) error {
 
 	args := sqlc.SaveTrendParams{
 		TrendsName:               trendName,
@@ -15,7 +16,6 @@ func (d *Dao) SaveTrend(ctx context.Context, trendName, trendLocation string, tr
 		TrendsEndtimestamp:       trendEndtimestamp,
 		TrendsIncreasePercentage: trendIncreasepercentage,
 	}
-	err := d.queries.SaveTrend(ctx, args)
 
-	return err
+	return d.WithTx(tx).SaveTrend(ctx, args)
 }
