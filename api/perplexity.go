@@ -24,9 +24,11 @@ type Item struct {
 	Name     string `json:"name"`
 	Location string `json:"location"`
 	Rank     int32    `json:"rank"`
+	EndTimestamp int32 `json:"end_timestamp"`
+	IncreasePercentage int32 `json:"increase_percentage"`
 }
 
-func (a *Api) CallPerplexityAPI(query []string) ([]Item, error) {
+func (a *Api) CallPerplexityAPI(query []TrendingSearch) ([]Item, error) {
 	// Perplexity APIのURL
 	url := "https://api.perplexity.ai/chat/completions" // Perplexity APIエンドポイント
 
@@ -47,7 +49,7 @@ func (a *Api) CallPerplexityAPI(query []string) ([]Item, error) {
 	// queryを順番に処理
 	for _, q := range query {
 		// プロンプトを作成
-		prompt := fmt.Sprintf("次のアイテムが飲食店名、食品名、食材名、その他のカテゴリにどれに該当するかを一つだけ分類してください。飲食店名、食品名、食材名、その他のいずれかを一つのみ出力するようして、絶対にほかは出力させないでください。##出力例(厳守):その他 ##アイテム %s", q)
+		prompt := fmt.Sprintf("次のアイテムが飲食店名、食品名、食材名、その他のカテゴリにどれに該当するかを一つだけ分類してください。飲食店名、食品名、食材名、その他のいずれかを一つのみ出力するようして、絶対にほかは出力させないでください。##出力例(厳守):その他 ##アイテム %s", q.Query)
 
 		// リクエストボディの設定
 		requestBody := map[string]interface{}{
@@ -117,11 +119,13 @@ func (a *Api) CallPerplexityAPI(query []string) ([]Item, error) {
 
 		// "飲食店名"の場合
 		if content == "飲食店名" {
-			item.Name = q
-			item.Location = q
+			item.Name = q.Query
+			item.Location = q.Query
+			item.EndTimestamp = q.EndTimestamp
+			item.IncreasePercentage = q.IncreasePercentage
 		} else if content == "食品名" || content == "食材名" {
 			// "食品名"または"食材名"の場合、場所を生成するためのプロンプトを作成
-			locationPrompt := fmt.Sprintf("次のアイテムはどこで売られていますか？最も売られている可能性が高い場所の単語を一つ出力してください。地名ではなく、店でお願いします。その単語以外は絶対に出力しないでください。: %s", q)
+			locationPrompt := fmt.Sprintf("次のアイテムはどこで売られていますか？最も売られている可能性が高い場所の単語を一つ出力してください。地名ではなく、店でお願いします。その単語以外は絶対に出力しないでください。: %s", q.Query)
 
 			// 売られている場所を問い合わせ
 			locationRequestBody := map[string]interface{}{
@@ -171,8 +175,10 @@ func (a *Api) CallPerplexityAPI(query []string) ([]Item, error) {
 			}
 
 			// 売られている場所の情報を取得
-			item.Name = q
+			item.Name = q.Query
 			item.Location = locationResponse.Choices[0].Message.Content
+			item.EndTimestamp = q.EndTimestamp
+			item.IncreasePercentage = q.IncreasePercentage
 		}
 
 		// itemsスライスに追加

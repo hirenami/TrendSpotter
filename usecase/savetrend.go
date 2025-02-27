@@ -16,7 +16,7 @@ func (u *Usecase) SaveTrend(ctx context.Context) error {
 	}
 
 	for _, item := range items {
-		err := u.dao.SaveTrend(ctx, item.Name, item.Location, item.Rank)
+		err := u.dao.SaveTrend(ctx, item.Name, item.Location, item.Rank, item.EndTimestamp, item.IncreasePercentage)
 		if err != nil {
 			return err
 		}

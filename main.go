@@ -47,6 +47,7 @@ func main() {
 	r := handler.SetupRoutes(Handler)
 
 	Usecase.SaveTrend(context.Background())
+	//Usecase.DeleteTrend(context.Background())
 
 	log.Println("Listening...")
 	if err := http.ListenAndServe(":8080", r); err != nil {

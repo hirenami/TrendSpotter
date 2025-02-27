@@ -2,9 +2,16 @@ package api
 
 import (
 	g "github.com/serpapi/google-search-results-golang"
+	"fmt"
 )
 
-func (a *Api) GetTrend() ([]string, error) {
+type TrendingSearch struct {
+	Query            string `json:"query"`
+	EndTimestamp     int32    `json:"end_timestamp"`
+	IncreasePercentage int32   `json:"increase_percentage"`
+}
+
+func (a *Api) GetTrend() ([]TrendingSearch, error) {
 	parameter := map[string]string{
 		"engine": "google_trends_trending_now",
 		"geo":    "JP",
@@ -19,10 +26,10 @@ func (a *Api) GetTrend() ([]string, error) {
 
 	trendingSearches, ok := results["trending_searches"].([]interface{})
 	if !ok {
-		panic("unexpected type for trending_searches")
+		return nil, fmt.Errorf("unexpected type for trending_searches")
 	}
 
-	var queries []string 
+	var trendingData []TrendingSearch
 
 	// 各トレンド情報を走査
 	for i := 0; i < len(trendingSearches); i++ {
@@ -44,9 +51,17 @@ func (a *Api) GetTrend() ([]string, error) {
 			}
 			if idVal, exists := category["id"]; exists {
 				if idFloat, ok := idVal.(float64); ok && int(idFloat) == 5 {
-					// カテゴリID 5 (Food and Drink) に該当する場合、queryをスライスに追加
+					// カテゴリID 5 (Food and Drink) に該当する場合、query、end_timestamp、increase_percentageを取り出す
 					if query, ok := trend["query"].(string); ok {
-						queries = append(queries, query) // queryをスライスに追加
+						if endTimestamp, ok := trend["end_timestamp"].(float64); ok {
+							if increasePercentage, ok := trend["increase_percentage"].(float64); ok {
+								trendingData = append(trendingData, TrendingSearch{
+									Query:            query,
+									EndTimestamp:     int32(endTimestamp),
+									IncreasePercentage: int32(increasePercentage),
+								})
+							}
+						}
 					}
 					break // 該当するカテゴリが見つかったので、他のカテゴリはチェック不要
 				}
@@ -54,5 +69,5 @@ func (a *Api) GetTrend() ([]string, error) {
 		}
 	}
 
-	return queries,nil 
+	return trendingData, nil
 }
